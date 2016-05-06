@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -84,6 +85,32 @@ public class MainActivity extends AppCompatActivity {
         devListView = (ListView) findViewById(R.id.dev_list);
         assert devListView != null;
         devListView.setAdapter(devListAdapter);
+        devListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
+                BluetoothDevice device = devList.get(pos);
+
+                String bondState;
+                switch (device.getBondState()){
+                    case BluetoothDevice.BOND_BONDED:
+                        bondState = "Bonded";
+                        break;
+                    case BluetoothDevice.BOND_BONDING:
+                        bondState = "Bonding";
+                        break;
+                    default:
+                        bondState = "None";
+                        break;
+                }
+
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Name : " + device.getName())
+                        .setMessage("Address : " + device.getAddress() + System.getProperty("line.separator")
+                            + "Bond State : " + bondState)
+                        .setPositiveButton("OK", null)
+                        .show();
+            }
+        });
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter == null) {
